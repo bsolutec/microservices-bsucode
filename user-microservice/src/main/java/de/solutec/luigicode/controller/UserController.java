@@ -1,6 +1,7 @@
 package de.solutec.luigicode.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +66,33 @@ public class UserController {
 		}
 		List<Bike> bikes = userService.getBikes(userId);
 		return ResponseEntity.ok(bikes);
+	}
+
+	// OpenFeign for car-service from user-service
+	@PostMapping("/savecar/{userId}")
+	public ResponseEntity<Car> SaveCar(@PathVariable("userId") int userId, @RequestBody Car car) {
+		if (userService.getUserById(userId) == null) {
+			return ResponseEntity.notFound().build();
+		}
+		Car carNew = userService.saveCar(userId, car);
+		return ResponseEntity.ok(carNew);
+	}
+
+	// OpenFeign for bike-service from user-service
+	@PostMapping("/savebike/{userId}")
+	public ResponseEntity<Bike> SaveBike(@PathVariable("userId") int userId, @RequestBody Bike bike) {
+		if (userService.getUserById(userId) == null) {
+			return ResponseEntity.notFound().build();
+		}
+		Bike bikeNew = userService.saveBike(userId, bike);
+		return ResponseEntity.ok(bikeNew);
+	}
+
+	// OpenFeign for car-service and bike-service from user-service
+	@GetMapping("/getall/{userId}")
+	public ResponseEntity<Map<String, Object>> getAllVehicles(@PathVariable("userId") int id) {
+		Map<String, Object> result = userService.getUserAndVehicles(id);
+		return ResponseEntity.ok(result);
 	}
 
 }
